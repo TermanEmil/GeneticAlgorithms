@@ -7,9 +7,10 @@ namespace GA.Population
 {
     public interface IPopulation<T>
     {
+        int Generation {get; }
         IList<IGenome<T>> Genomes { get; set; }
 
-        void Populate(int n, IGenomeGenerator<T> genomeGenerator);
-        void Evolve(IGenerationGenerator<T> generationGenerator);
+        void Populate(int n);
+        void Evolve();
     }
 }

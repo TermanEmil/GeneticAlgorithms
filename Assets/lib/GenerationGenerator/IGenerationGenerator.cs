@@ -5,6 +5,6 @@ namespace GA.GenerationGenerator
 {
     public interface IGenerationGenerator<T>
     {
-        IList<IGenome<T>> Generate(int count);
+        IList<IGenome<T>> Generate(IList<IGenome<T>> prevGeneration);
     }
 }

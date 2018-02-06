@@ -6,5 +6,6 @@ namespace GA.Genome
     public interface IGenome<T>
     {
         IList<Gene<T>> Genes { get; set; }
+        double Fitness { get; set; }
     }
 }
