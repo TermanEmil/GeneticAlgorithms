@@ -6,6 +6,6 @@ namespace GA.GenerationGenerator.Crossover
     public interface ICrossover<T>
     {
         int ChildrenToProduce { get; }
-        IEnumerable<IGenome<T>> Crossover(IList<IGenome<T>> parents);
+        IList<IGenome<T>> Crossover(IList<IGenome<T>> parents);
     }
 }

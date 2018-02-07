@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using GA.Gene;
 
 namespace GA.Genome
@@ -11,6 +12,17 @@ namespace GA.Genome
         public GenomeBase(IList<Gene<T>> genes)
         {
             Genes = genes;
+        }
+
+        public IGenome<T> CreateNew(bool copyGenes = true)
+        {
+            IList<Gene<T>> genes;
+
+            if (copyGenes)
+                genes = Genes.Select(x => new Gene<T>(x)).ToArray();
+            else
+                genes = Genes;
+            return new GenomeBase<T>(genes);
         }
     }
 }

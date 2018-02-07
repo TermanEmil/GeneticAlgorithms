@@ -7,5 +7,7 @@ namespace GA.Genome
     {
         IList<Gene<T>> Genes { get; set; }
         double Fitness { get; set; }
+
+        IGenome<T> CreateNew(bool copyGenes = true);
     }
 }

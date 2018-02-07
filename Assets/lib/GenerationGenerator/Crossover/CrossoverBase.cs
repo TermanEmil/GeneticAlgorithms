@@ -15,6 +15,11 @@ namespace GA.GenerationGenerator.Crossover
             ChildrenToProduce = childrenToProduce;
         }
 
-        public abstract IEnumerable<IGenome<T>> Crossover(IList<IGenome<T>> parents);
+        public IList<IGenome<T>> Crossover(IList<IGenome<T>> parents)
+        {
+            return PerformCross(parents);
+        }
+
+        protected abstract IList<IGenome<T>> PerformCross(IList<IGenome<T>> parents);
     }
 }
