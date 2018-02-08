@@ -8,6 +8,10 @@ using System.Linq;
 
 namespace GA_Tests.EvolveSum
 {
+    /// <summary>
+    /// The problem: Evolve an array of numbers of a given length, to make
+    /// a sum equal to a given number.
+    /// </summary>
     public class EvolveSumGenerationGenerator : IGenerationGenerator<int>
     {
         public System.Random RandomInst { get; set; }
