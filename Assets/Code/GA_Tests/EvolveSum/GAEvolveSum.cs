@@ -86,9 +86,14 @@ namespace GA_Tests.EvolveSum
 
         public void PassGeneration()
         {
+            //Population.Genomes = Population.Genomes.OrderByDescending(x => x.Fitness).ToArray();
+            Population.Evolve();
+        }
+
+        public void EvaluateGenomes()
+        {
             foreach (var genome in Population.Genomes)
                 genome.Fitness = FitnessEval.Evaluate(genome);
-            Population.Evolve();
         }
 
         private BreedingBase<int> NewBreeding(
@@ -102,7 +107,7 @@ namespace GA_Tests.EvolveSum
             ICrossover<int> crossover;
             IMutation<int> mutator;
 
-            selector = new EliteSelection<int>(poplLen);
+            selector = new EliteSelection<int>(2, partToBeElites: 0.5d);
             crossover = new SinglePointCrossover<int>(RandomInst, 1);
             mutator = new ES_Mutation(RandomInst, geneMutChance, mutRange);
 

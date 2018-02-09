@@ -9,16 +9,26 @@ namespace GA.GenerationGenerator.GenomeProducer.Breeding.Selection
         public IList<IGenome<T>> Elites { get; protected set; }
         public int CurrentIndex { get; set; } = 0;
 
-        public EliteSelection(int countToSelect) : base(countToSelect)
+        /// <summary>
+        /// Part of genomes chosen to be elites.
+        /// </summary>
+        public double PartToBeElites { get; set; } = 0.5d;
+
+        /// <summary>
+        /// This number should be modified after instantiation.
+        /// </summary>
+        public int MinElites { get; set; } = 2;
+
+        public EliteSelection(
+            int countToSelect,
+            double partToBeElites = 0.5d) : base(countToSelect)
         {
-            // Do nothing.
+            PartToBeElites = partToBeElites;
         }
 
         protected override void DoBeforeAllSelections()
         {
-            Elites = AllGenomes.OrderByDescending(x => x.Fitness)
-                               .Take(TotalRequiredNb)
-                               .ToArray();
+            Elites = GetElites(AllGenomes);
             CurrentIndex = 0;
         }
 
@@ -34,7 +44,34 @@ namespace GA.GenerationGenerator.GenomeProducer.Breeding.Selection
                 if (CurrentIndex >= Elites.Count())
                     CurrentIndex = 0;
             }
+
+            if (result.Count() != CountToSelect)
+                ThrowInvalidSelected(result.Count());
+
             return result;
+        }
+
+        /// <summary>
+        /// This method should be overriden for any more precisese Elite
+        /// selection.
+        /// </summary>
+        protected IList<IGenome<T>> GetElites(IList<IGenome<T>> genomes)
+        {
+            int n;
+
+            n = (int)(genomes.Count * PartToBeElites);
+            n = System.Math.Max(MinElites, n);
+            return genomes.OrderByDescending(x => x.Fitness)
+                          .Take(n)
+                          .ToArray();
+        }
+
+        private void ThrowInvalidSelected(int resultCount)
+        {
+            throw new System.Exception(
+                string.Format("Elite selection: invalid number of " +
+                              "genomes selected: {0}/{1}",
+                              resultCount, CountToSelect));
         }
     }
 }

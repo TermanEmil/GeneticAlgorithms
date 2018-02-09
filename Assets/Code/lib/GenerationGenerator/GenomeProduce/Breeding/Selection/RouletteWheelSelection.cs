@@ -45,7 +45,6 @@ namespace GA.GenerationGenerator.GenomeProducer.Breeding.Selection
 
             GenomesAndFitness =
                 AllGenomes.OrderByDescending(x => x.Fitness)
-                          .Take(TotalRequiredNb)
                           .ToDictionary(k => k,v => v.Fitness + minFitness);
         }
 

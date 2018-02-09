@@ -19,18 +19,23 @@ namespace GA.GenerationGenerator.GenomeProducer.Reinsertion
             int n;
 
             n = Count(genomes);
-            if (n < genomes.Count())
-            {
-                throw new Exception(string.Format(
-                    "Reinsertion: Invalid number: {0} / {1}",
-                    n, genomes.Count()));
-            }
-            return genomes.Take(n).ToArray();
+            if (n > genomes.Count())
+                ThrowInvalidNb(n, genomes.Count());
+            
+            return genomes.OrderByDescending(x => x.Fitness)
+                          .Take(n).Select(x => x.CreateNew(true)).ToArray();
         }
 
         public int Count(IList<IGenome<T>> genomes)
         {
             return GenomesToGetCount;
+        }
+
+        private void ThrowInvalidNb(int n, int maxNb)
+        {
+            throw new Exception(
+                string.Format("Reinsertion: Invalid number: {0} / {1}",
+                              n, maxNb));
         }
     }
 }

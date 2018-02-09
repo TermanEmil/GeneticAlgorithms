@@ -31,39 +31,51 @@ namespace GA.GenerationGenerator.GenomeProducer.Breeding
         {
             IList<IGenome<T>> result;
             IList<IGenome<T>> babies;
+            int n;
 
-            result = new List<IGenome<T>>(BabiesToMakeCount);
-            Selector.BeforeAllSelections(BabiesToMakeCount, genomes);
-            while (result.Count < BabiesToMakeCount)
+            n = Count(genomes);
+            result = new List<IGenome<T>>(n);
+            Selector.BeforeAllSelections(genomes);
+            while (result.Count < n)
             {
                 babies = Crossover.Crossover(Selector.SelectNext());
                 if (babies.Count == 0)
-                {
-                    throw new System.Exception("Crossover is required to " +
-                                               "make at least one child.");
-                }
+                    ThrowInvalidChildProducedCount();
 
                 foreach (var babie in babies)
                 {
                     Mutator.Mutate(babie);
                     result.Add(babie);
-                    if (result.Count() > BabiesToMakeCount)
+                    if (result.Count() > n)
                         break;
                 }
             }
 
-            if (result.Count() > BabiesToMakeCount)
-                result = result.Take(BabiesToMakeCount).ToArray();
+            if (result.Count() > n)
+                result = result.Take(n).ToArray();
 
-            if (result.Count() != BabiesToMakeCount)
-                throw new System.Exception("Invalid number of children bread.");
+            if (result.Count() != n)
+                ThrowInvalidBreadCount(result.Count(), n);
 
             return result;
         }
 
         public int Count(IList<IGenome<T>> genomes)
         {
-            return 0;
+            return BabiesToMakeCount;
+        }
+
+        private void ThrowInvalidChildProducedCount()
+        {
+            throw new System.Exception("Crossover is required to " +
+                                       "make at least one child.");
+        }
+
+        private void ThrowInvalidBreadCount(int resultCount, int required)
+        {
+            throw new System.Exception(string.Format("Invalid number of " +
+                                                     "children bread: {0}/{1}",
+                                                     resultCount, required));
         }
     }
 }

@@ -6,7 +6,6 @@ namespace GA.GenerationGenerator.GenomeProducer.Breeding.Selection
 {
     public abstract class SelectionBase<T> : ISelection<T>
     {
-        public int TotalRequiredNb { get; set; }
         public int CountToSelect { get; set; }
         public IList<IGenome<T>> AllGenomes { get; set; }
 
@@ -15,17 +14,14 @@ namespace GA.GenerationGenerator.GenomeProducer.Breeding.Selection
             CountToSelect = countToSelect;
         }
 
-        public void BeforeAllSelections(
-            int requiredNb,
-            IList<IGenome<T>> allGenomes)
+        public void BeforeAllSelections(IList<IGenome<T>> allGenomes)
         {
-            if (allGenomes == null || allGenomes.Count() < requiredNb)
+            if (allGenomes == null)
             {
                 throw new System.Exception(
                     "Genomes can't be null or 0 length.");
             }
 
-            TotalRequiredNb = requiredNb;
             AllGenomes = allGenomes;
             DoBeforeAllSelections();
         }

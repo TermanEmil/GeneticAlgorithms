@@ -41,8 +41,18 @@ namespace GA.GenerationGenerator
             result = new List<IGenome<T>>(genomes.Count);
             foreach (var producer in GenomeProducers)
                 result.AddRange(producer.Generate(genomes));
+
+            if (result.Count() != ToProduceCount)
+                ThrowInvalidResultCount(result.Count());
             
             return result;
+        }
+
+        private void ThrowInvalidResultCount(int resultCount)
+        {
+            throw new System.Exception(
+                string.Format("New generation: Invalid result Count: {0}/{1}",
+                              resultCount, ToProduceCount));
         }
     }
 }

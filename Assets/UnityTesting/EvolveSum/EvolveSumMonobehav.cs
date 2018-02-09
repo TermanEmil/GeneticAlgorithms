@@ -63,15 +63,13 @@ public class EvolveSumMonobehav : MonoBehaviour
 
     private void GAIter()
     {
+        evolveSum.EvaluateGenomes();
         maxFitness = evolveSum.BestFitness;
         bestSum = evolveSum.BestSum;
-
-        //Debug.Log(evolveSum.Population.Generation);
-        //Debug.Log(evolveSum.Population);
 
         evolveSum.PassGeneration();
 
-        maxFitness = evolveSum.BestFitness;
-        bestSum = evolveSum.BestSum;
+        // Once again, because I'm too lazy...
+        evolveSum.EvaluateGenomes();
     }
 }

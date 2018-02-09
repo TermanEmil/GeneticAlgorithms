@@ -144,12 +144,12 @@ MonoBehaviour:
   populationLen: 50
   genomeGenesLen: 5
   geneValRange: 50
-  partToKeepFromLastGeneration: 0
+  partToReinsert: 0.1
   geneMutChance: 0.1
   geneMutationRange: 50
   maxNbOfGenerations: 100
   autostart: 1
-  seedRandom: 1
+  seedRandom: 0
   maxFitness: 0
   bestSum: 0
 --- !u!4 &498387140

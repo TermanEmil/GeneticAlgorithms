@@ -38,10 +38,7 @@ namespace GA.Population
 
             Genomes = GenerationGenerator.Generate(Genomes);
             if (!Genomes.Any())
-            {
-                UnityEngine.Debug.Log("repopulate!");
                 Populate(prevPoplLen);
-            }
             
             Generation++;
         }
