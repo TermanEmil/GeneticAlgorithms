@@ -1,15 +1,15 @@
 using GA.Gene;
 using GA.Genome;
-using GA.GenerationGenerator.Breeding.Mutation;
+using GA.GenerationGenerator.GenomeProducer.Breeding.Mutation;
 using System;
 
 namespace GA_Tests.EvolveSum
 {
-    public class EvolveSumMutation : MutationBase<int>
+    public class ES_Mutation : MutationBase<int>
     {
         public int MutationRange { get; set; }
 
-        public EvolveSumMutation(Random random, double geneMutChance, int mutRange)
+        public ES_Mutation(Random random, double geneMutChance, int mutRange)
             : base(random, geneMutChance)
         {
             MutationRange = mutRange;

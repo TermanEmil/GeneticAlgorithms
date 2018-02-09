@@ -1,16 +1,17 @@
 using System.Collections.Generic;
 
 using GA.Genome;
-using GA.GenerationGenerator.Breeding;
-using GA.GenerationGenerator.Reinsertion;
+using GA.GenerationGenerator.GenomeProducer;
+using GA.GenerationGenerator.GenomeProducer.Reinsertion;
+using GA.GenerationGenerator.GenomeProducer.Breeding;
+using System.Linq;
 
 namespace GA.GenerationGenerator
 {
     public class GenerationGeneratorBase<T> : IGenerationGenerator<T>
     {
         public int ToProduceCount { get; set; } = 0;
-        public IList<IReinsertion<T>> Reinsertions { get; set; }
-        public IList<IBreeding<T>> Breedings { get; set; }
+        public IList<IGenomeProducer<T>> GenomeProducers { get; set; }
 
         public GenerationGeneratorBase(
             int toProduceCount,
@@ -18,18 +19,19 @@ namespace GA.GenerationGenerator
             IBreeding<T> breeding)
         {
             ToProduceCount = toProduceCount;
-            Reinsertions = new IReinsertion<T>[1] { reinsertion };
-            Breedings = new IBreeding<T>[1] { breeding };
+            GenomeProducers = new IGenomeProducer<T>[2]
+            {
+                reinsertion,
+                breeding
+            };
         }
 
         public GenerationGeneratorBase(
             int toProduceCount,
-            IList<IReinsertion<T>> reinsertions,
-            IList<IBreeding<T>> breedings)
+            IList<IGenomeProducer<T>> producers)
         {
             ToProduceCount = toProduceCount;
-            Reinsertions = reinsertions;
-            Breedings = breedings;
+            GenomeProducers = producers;
         }
 
         public IList<IGenome<T>> Generate(IList<IGenome<T>> genomes)
@@ -37,13 +39,10 @@ namespace GA.GenerationGenerator
             List<IGenome<T>> result;
 
             result = new List<IGenome<T>>(genomes.Count);
-            foreach (var reinsertion in Reinsertions)
-                result.AddRange(reinsertion.GetGenomes(genomes));
-
-            //foreach (var breeding in Breedings)
-                //result.AddRange(breeding.Breed())
-
-            return null;
+            foreach (var producer in GenomeProducers)
+                result.AddRange(producer.Generate(genomes));
+            
+            return result;
         }
     }
 }

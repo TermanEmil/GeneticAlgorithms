@@ -2,7 +2,7 @@ using GA.Gene;
 using GA.Genome;
 using System;
 
-namespace GA.GenerationGenerator.Breeding.Mutation
+namespace GA.GenerationGenerator.GenomeProducer.Breeding.Mutation
 {
     public abstract class MutationBase<T> : IMutation<T>
     {

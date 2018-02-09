@@ -2,7 +2,7 @@ using GA.Genome;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace GA.GenerationGenerator.Breeding.Selection
+namespace GA.GenerationGenerator.GenomeProducer.Breeding.Selection
 {
     public class EliteSelection<T> : SelectionBase<T>
     {

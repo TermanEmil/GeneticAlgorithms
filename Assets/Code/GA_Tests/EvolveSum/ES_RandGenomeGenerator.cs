@@ -6,13 +6,13 @@ using GA.Genome.RandGenerator;
 
 namespace GA_Tests.EvolveSum
 {
-    public class EvolveSumGenomeGenerator : IRandGenomeGenerator<int>
+    public class ES_RandGenomeGenerator : IRandGenomeGenerator<int>
     {
         private int NumbLen { get; set; }
         private int RandomInterval { get; set; }
         private Random RandomInst { get; set; }
 
-        public EvolveSumGenomeGenerator(int numbLen, int randomInterval, Random random)
+        public ES_RandGenomeGenerator(int numbLen, int randomInterval, Random random)
         {
             NumbLen = numbLen;
             RandomInterval = randomInterval;

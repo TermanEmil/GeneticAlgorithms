@@ -4,11 +4,11 @@ using System;
 
 namespace GA.Fitness
 {
-    public class EvolveSumFitnessEval : IFitnessEval<int>
+    public class ES_FitnessEval : IFitnessEval<int>
     {
         public int TargetSum { get; set; }
 
-        public EvolveSumFitnessEval(int targetSum)
+        public ES_FitnessEval(int targetSum)
         {
             TargetSum = targetSum;
         }

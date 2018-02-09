@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 
-namespace GA.GenerationGenerator.Breeding.Selection
+namespace GA.GenerationGenerator.GenomeProducer.Breeding.Selection
 {
     public class RouletteWheelSelection<T> : SelectionBase<T>
     {

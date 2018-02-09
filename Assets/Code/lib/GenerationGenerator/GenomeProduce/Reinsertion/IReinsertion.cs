@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using GA.Genome;
 
-namespace GA.GenerationGenerator.Reinsertion
+namespace GA.GenerationGenerator.GenomeProducer.Reinsertion
 {
     /// <summary>
     /// Reinsertion is a stage when some genomes from the previous generation
@@ -10,8 +10,7 @@ namespace GA.GenerationGenerator.Reinsertion
     /// Anyway, this stage is invoked before selection-crossover, so the number
     /// of resulting 'copies' must be considered.
     /// </summary>
-    public interface IReinsertion<T>
+    public interface IReinsertion<T> : IGenomeProducer<T>
     {
-        IList<IGenome<T>> GetGenomes(IEnumerable<IGenome<T>> genomes);
     }
 }

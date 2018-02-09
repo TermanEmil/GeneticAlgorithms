@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using GA.Genome;
 
-namespace GA.GenerationGenerator.Breeding.Selection
+namespace GA.GenerationGenerator.GenomeProducer.Breeding.Selection
 {
     /// <summary>
     /// Select genomes to breed.

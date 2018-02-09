@@ -11,7 +11,7 @@ public class EvolveSumMonobehav : MonoBehaviour
     public int populationLen = 50;
     public int genomeGenesLen = 5;
     public int geneValRange = 50;
-    public double partToKeepFromLastGeneration = 0.1d;
+    public double partToReinsert = 0.1d;
     public double geneMutChance = 0.1f;
     public int geneMutationRange = 50;
 
@@ -44,16 +44,14 @@ public class EvolveSumMonobehav : MonoBehaviour
 
         rand = (seedRandom) ? new System.Random(1) : new System.Random();
         evolveSum = new GAEvolveSum(
-            rand, targetSum, populationLen, genomeGenesLen, geneValRange);
-
-        ((EvolveSumGenerationGenerator)evolveSum.Population.GenerationGenerator)
-            .GeneMutationChance = geneMutChance;
-
-        ((EvolveSumGenerationGenerator)evolveSum.Population.GenerationGenerator)
-            .GeneMutationRange = geneMutationRange;
-
-        ((EvolveSumGenerationGenerator)evolveSum.Population.GenerationGenerator)
-            .GenomesToKeep = partToKeepFromLastGeneration;
+            rand,
+            partToReinsert,
+            targetSum,
+            populationLen,
+            genomeGenesLen,
+            geneValRange,
+            geneMutChance,
+            geneMutationRange);
 
         if (autostart)
         {

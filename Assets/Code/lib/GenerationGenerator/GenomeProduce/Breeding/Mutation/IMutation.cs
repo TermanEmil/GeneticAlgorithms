@@ -1,6 +1,6 @@
 using GA.Genome;
 
-namespace GA.GenerationGenerator.Breeding.Mutation
+namespace GA.GenerationGenerator.GenomeProducer.Breeding.Mutation
 {
     public interface IMutation<T>
     {

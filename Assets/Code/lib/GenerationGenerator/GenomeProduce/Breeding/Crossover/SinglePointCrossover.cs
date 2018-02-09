@@ -6,7 +6,7 @@ using GA.Gene.GeneChoice;
 using System;
 using System.Linq;
 
-namespace GA.GenerationGenerator.Breeding.Crossover
+namespace GA.GenerationGenerator.GenomeProducer.Breeding.Crossover
 {
     public class SinglePointCrossover<T> : CrossoverBase<T>
     {

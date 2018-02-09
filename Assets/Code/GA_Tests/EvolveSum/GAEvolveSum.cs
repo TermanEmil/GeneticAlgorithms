@@ -4,6 +4,12 @@ using GA.Fitness;
 using System;
 using System.Linq;
 
+using GA.GenerationGenerator.GenomeProducer.Reinsertion;
+using GA.GenerationGenerator.GenomeProducer.Breeding;
+using GA.GenerationGenerator.GenomeProducer.Breeding.Selection;
+using GA.GenerationGenerator.GenomeProducer.Breeding.Crossover;
+using GA.GenerationGenerator.GenomeProducer.Breeding.Mutation;
+
 namespace GA_Tests.EvolveSum
 {
     public class GAEvolveSum
@@ -13,7 +19,7 @@ namespace GA_Tests.EvolveSum
         public PopulationBase<int> Population { get; private set; }
         public IFitnessEval<int> FitnessEval { get; set; }
 
-        public int TargetSum { get; set; }
+        public int TargetSum { get; private set; }
         private Random RandomInst { get; set; }
 
         public double BestFitness
@@ -38,28 +44,43 @@ namespace GA_Tests.EvolveSum
 
         public GAEvolveSum(
             Random rand,
+            double partToReinsert,
             int targetSum,
             int poplLen,
             int genomeNumbers,
-            int nbInterval)
+            int nbInterval,
+            double geneMutChance,
+            int geneMutRange)
         {
-            IGenerationGenerator<int> generationGenerator;
-            EvolveSumGenomeGenerator genomeGenerator;
+            ES_RandGenomeGenerator randGenomeGenerator;
+            GenerationGeneratorBase<int> generationGenerator;
+            IReinsertion<int> reinsertion;
+            IBreeding<int> breeding;
 
-            GenomeNumbers = genomeNumbers;
             RandomInst = rand;
             TargetSum = targetSum;
+            FitnessEval = new ES_FitnessEval(targetSum);
 
-            FitnessEval = new EvolveSumFitnessEval(targetSum);
-            genomeGenerator = new EvolveSumGenomeGenerator(
-                genomeNumbers,
-                nbInterval,
-                RandomInst);
+            randGenomeGenerator = new ES_RandGenomeGenerator(genomeNumbers,
+                                                             nbInterval,
+                                                             rand);
+            reinsertion = new ReinsertBest<int>(
+                (int)(poplLen * partToReinsert));
+            
+            breeding = NewBreeding(
+                poplLen,
+                partToReinsert,
+                geneMutChance,
+                geneMutRange);
 
-            generationGenerator = new EvolveSumGenerationGenerator(RandomInst);
+            generationGenerator = new GenerationGeneratorBase<int>(
+                poplLen,
+                reinsertion,
+                breeding);
+
             Population = new PopulationBase<int>(
                 poplLen,
-                genomeGenerator,
+                randGenomeGenerator,
                 generationGenerator);
         }
 
@@ -68,6 +89,30 @@ namespace GA_Tests.EvolveSum
             foreach (var genome in Population.Genomes)
                 genome.Fitness = FitnessEval.Evaluate(genome);
             Population.Evolve();
+        }
+
+        private BreedingBase<int> NewBreeding(
+            int poplLen,
+            double partToReinsert,
+            double geneMutChance,
+            int mutRange)
+        {
+            BreedingBase<int> result;
+            ISelection<int> selector;
+            ICrossover<int> crossover;
+            IMutation<int> mutator;
+
+            selector = new EliteSelection<int>(poplLen);
+            crossover = new SinglePointCrossover<int>(RandomInst, 1);
+            mutator = new ES_Mutation(RandomInst, geneMutChance, mutRange);
+
+            result = new BreedingBase<int>(
+                poplLen - (int)(partToReinsert * poplLen),
+                selector,
+                crossover,
+                mutator
+            );
+            return result;
         }
     }
 }
