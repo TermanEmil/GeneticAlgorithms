@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using GA.Genome;
 using GA.GenerationGenerator;
-using GA.GenerationGenerator.Crossover;
-using GA.GenerationGenerator.Selection;
-using GA.GenerationGenerator.Mutation;
+using GA.GenerationGenerator.Breeding.Crossover;
+using GA.GenerationGenerator.Breeding.Selection;
+using GA.GenerationGenerator.Breeding.Mutation;
 using System.Linq;
 
 namespace GA_Tests.EquationSolver

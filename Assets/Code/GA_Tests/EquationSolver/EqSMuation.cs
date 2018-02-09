@@ -1,6 +1,6 @@
 using System;
 using GA.Gene;
-using GA.GenerationGenerator.Mutation;
+using GA.GenerationGenerator.Breeding.Mutation;
 
 namespace GA_Tests.EquationSolver
 {

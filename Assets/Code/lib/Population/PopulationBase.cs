@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using GA.Genome;
-using GA.Genome.Generator;
+using GA.Genome.RandGenerator;
 using GA.GenerationGenerator;
 
 namespace GA.Population
@@ -11,14 +11,14 @@ namespace GA.Population
         public int Generation { get; set; }
         public IList<IGenome<T>> Genomes { get; set; }
 
-        public IGenomeGenerator<T> GenomeGenerator { get; set; }
+        public IRandGenomeGenerator<T> RandGnmGenerator { get; set; }
         public IGenerationGenerator<T> GenerationGenerator { get; set; }
 
         public PopulationBase(int populationLength,
-                              IGenomeGenerator<T> genomeGenerator,
+                              IRandGenomeGenerator<T> genomeGenerator,
                               IGenerationGenerator<T> generationGenerator)
         {
-            GenomeGenerator = genomeGenerator;
+            RandGnmGenerator = genomeGenerator;
             GenerationGenerator = generationGenerator;
             Populate(populationLength);
         }
@@ -26,7 +26,7 @@ namespace GA.Population
         public void Populate(int n)
         {
             Genomes = Enumerable.Range(0, n)
-                                .Select(x => GenomeGenerator.NewRandomGenome())
+                                .Select(x => RandGnmGenerator.NewRandomGenome())
                                 .ToArray();
         }
 

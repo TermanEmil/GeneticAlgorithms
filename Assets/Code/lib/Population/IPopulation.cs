@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using GA.Genome;
-using GA.Genome.Generator;
+using GA.Genome.RandGenerator;
 using GA.GenerationGenerator;
 
 namespace GA.Population

@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using GA.Genome;
 using GA.GenerationGenerator;
-using GA.GenerationGenerator.Crossover;
-using GA.GenerationGenerator.Selection;
-using GA.GenerationGenerator.Mutation;
+using GA.GenerationGenerator.Breeding.Crossover;
+using GA.GenerationGenerator.Breeding.Selection;
 using System.Linq;
 
 namespace GA_Tests.EvolveSum
@@ -35,7 +34,7 @@ namespace GA_Tests.EvolveSum
             int genomesToKeep;
             int availableGenomes;
 
-            selector = new RouletteWheelSelection<int>(RandomInst);
+            selector = new RouletteWheelSelection<int>(RandomInst, 2);
             //selector = new EliteSelection<int>();
 
             crossover = new SinglePointCrossover<int>(RandomInst);
@@ -55,13 +54,7 @@ namespace GA_Tests.EvolveSum
 
             for (int i = 0; i < availableGenomes; i++)
             {
-                selector.BeforeSelection(i);
-                IGenome<int>[] tmpParents =
-                {
-                    selector.SelectNext(),
-                    selector.SelectNext()
-                };
-                var babies = crossover.Crossover(tmpParents);
+                var babies = crossover.Crossover(selector.SelectNext());
 
                 if (RandomInst.NextDouble() <= 0.5f)
                     newGenome = babies.First();

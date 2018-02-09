@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 
-namespace GA.GenerationGenerator.Selection
+namespace GA.GenerationGenerator.Breeding.Selection
 {
     public class RouletteWheelSelection<T> : SelectionBase<T>
     {
@@ -26,7 +26,9 @@ namespace GA.GenerationGenerator.Selection
             set;
         }
 
-        public RouletteWheelSelection(Random random)
+        public RouletteWheelSelection(
+            Random random,
+            int countToSelect) : base(countToSelect)
         {
             RandomInst = random;
         }
@@ -47,27 +49,29 @@ namespace GA.GenerationGenerator.Selection
                           .ToDictionary(k => k,v => v.Fitness + minFitness);
         }
 
-        public override void BeforeSelection(int iter)
+        public override IList<IGenome<T>> SelectNext()
         {
-            GenomesAndFitnessBuf =
+            IGenome<T>                      tmp;
+            List<IGenome<T>>                result;
+            double                          totalFitness;
+            Dictionary<IGenome<T>, double>  genomesAndFitnessBuf;
+
+            genomesAndFitnessBuf =
                 GenomesAndFitness.ToDictionary(kv => kv.Key, kv => kv.Value);
-        }
 
-        public override IGenome<T> SelectNext()
-        {
-            IGenome<T> result;
-            double totalFitness;
+            result = new List<IGenome<T>>(CountToSelect);
+            for (int i = 0; i < CountToSelect; i++)
+            {
+                totalFitness = GenomesAndFitnessBuf.Sum(kv => kv.Value);
+                tmp = RandomSelectElement(totalFitness, GenomesAndFitnessBuf);
 
-            if (GenomesAndFitnessBuf.Count == 0)
-                BeforeSelection(0);
-            
-            totalFitness = GenomesAndFitnessBuf.Sum(kv => kv.Value);
-            result = RandomSelectElement(totalFitness, GenomesAndFitnessBuf);
-            GenomesAndFitnessBuf.Remove(result);
+                GenomesAndFitnessBuf.Remove(tmp);
+                result.Add(tmp);
+            }
             return result;
         }
 
-        private TKey RandomSelectElement<TKey>(
+        protected TKey RandomSelectElement<TKey>(
             double limit,
             Dictionary<TKey, double> dict)
         {

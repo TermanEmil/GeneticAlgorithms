@@ -1,9 +1,9 @@
 using GA.Gene;
 using GA.Genome;
 
-namespace GA.Genome.Generator
+namespace GA.Genome.RandGenerator
 {
-    public interface IGenomeGenerator<T>
+    public interface IRandGenomeGenerator<T>
     {
         IGenome<T> NewRandomGenome();
     }

@@ -6,16 +6,27 @@ using GA.Gene.GeneChoice;
 using System;
 using System.Linq;
 
-namespace GA.GenerationGenerator.Crossover
+namespace GA.GenerationGenerator.Breeding.Crossover
 {
     public class SinglePointCrossover<T> : CrossoverBase<T>
     {
         public int Pivot { get; set; } = -1;
+        public int MaxBabiesToMake { get; set; } = 1;
         private Random RandomInst { get; set; }
 
-        public SinglePointCrossover(Random random)
+        public SinglePointCrossover(Random random, int maxBabies = 1)
         {
             RandomInst = random;
+            MaxBabiesToMake = maxBabies;
+        }
+
+        protected override IList<IGenome<T>> SelectBabies(
+            IList<IGenome<T>> babies)
+        {
+            if (MaxBabiesToMake >= babies.Count())
+                return babies;
+            else
+                return babies.Take(MaxBabiesToMake).ToArray();
         }
 
         protected override IList<IGenome<T>> PerformCross(IList<IGenome<T>> parents)

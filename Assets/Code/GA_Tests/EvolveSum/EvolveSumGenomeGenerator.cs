@@ -2,11 +2,11 @@ using System;
 using System.Linq;
 using GA.Gene;
 using GA.Genome;
-using GA.Genome.Generator;
+using GA.Genome.RandGenerator;
 
 namespace GA_Tests.EvolveSum
 {
-    public class EvolveSumGenomeGenerator : IGenomeGenerator<int>
+    public class EvolveSumGenomeGenerator : IRandGenomeGenerator<int>
     {
         private int NumbLen { get; set; }
         private int RandomInterval { get; set; }

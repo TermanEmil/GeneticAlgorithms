@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using GA.Genome;
 
-namespace GA.GenerationGenerator.Crossover
+namespace GA.GenerationGenerator.Breeding.Crossover
 {
     public interface ICrossover<T>
     {

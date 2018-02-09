@@ -1,8 +1,9 @@
 using GA.Gene;
 using GA.Genome;
+using GA.GenerationGenerator.Breeding.Mutation;
 using System;
 
-namespace GA.GenerationGenerator.Mutation
+namespace GA_Tests.EvolveSum
 {
     public class EvolveSumMutation : MutationBase<int>
     {

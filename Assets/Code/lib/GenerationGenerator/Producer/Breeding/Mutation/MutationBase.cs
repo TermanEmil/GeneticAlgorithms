@@ -2,9 +2,9 @@ using GA.Gene;
 using GA.Genome;
 using System;
 
-namespace GA.GenerationGenerator.Mutation
+namespace GA.GenerationGenerator.Breeding.Mutation
 {
-    public abstract class MutationBase<T>
+    public abstract class MutationBase<T> : IMutation<T>
     {
         public Random RandomInst { get; set; }
         public double GeneMutationChance { get; set; }
