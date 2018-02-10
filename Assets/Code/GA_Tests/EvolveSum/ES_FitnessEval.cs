@@ -1,8 +1,9 @@
 using System.Linq;
 using GA.Genome;
 using System;
+using GA.Fitness;
 
-namespace GA.Fitness
+namespace GA_Tests.EvolveSum
 {
     public class ES_FitnessEval : IFitnessEval<int>
     {
