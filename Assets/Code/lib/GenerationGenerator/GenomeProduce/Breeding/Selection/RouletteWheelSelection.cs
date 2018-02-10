@@ -14,18 +14,6 @@ namespace GA.GenerationGenerator.GenomeProducer.Breeding.Selection
         /// </summary>
         protected Dictionary<IGenome<T>, double> GenomesAndFitness { get; set; }
 
-        /// <summary>
-        /// Buffer used for opperations. Once a genome is picked, it's removed
-        /// from here. Every time a set of parrents is picked, this buffer
-        /// is first copied from GenomesAndFitness.
-        /// In this way, there can't be selected the same genome twice.
-        /// </summary>
-        protected Dictionary<IGenome<T>, double> GenomesAndFitnessBuf
-        {
-            get;
-            set;
-        }
-
         public RouletteWheelSelection(
             Random random,
             int countToSelect) : base(countToSelect)
@@ -61,34 +49,62 @@ namespace GA.GenerationGenerator.GenomeProducer.Breeding.Selection
             result = new List<IGenome<T>>(CountToSelect);
             for (int i = 0; i < CountToSelect; i++)
             {
-                totalFitness = GenomesAndFitnessBuf.Sum(kv => kv.Value);
-                tmp = RandomSelectElement(totalFitness, GenomesAndFitnessBuf);
+                totalFitness = genomesAndFitnessBuf.Sum(kv => kv.Value);
+                tmp = RandomSelectElement(
+                    totalFitness, genomesAndFitnessBuf, RandomInst);
 
-                GenomesAndFitnessBuf.Remove(tmp);
+                genomesAndFitnessBuf.Remove(tmp);
                 result.Add(tmp);
             }
             return result;
         }
 
-        protected TKey RandomSelectElement<TKey>(
+        protected static TKey RandomSelectElement<TKey>(
             double limit,
-            Dictionary<TKey, double> dict)
+            Dictionary<TKey, double> dict,
+            Random rand)
         {
-            double rnd;
+            double randVal;
 
-            rnd = RandomInst.NextDouble() * limit;
+            randVal = rand.NextDouble() * limit;
             foreach (var kv in dict)
             {
-                if (rnd <= kv.Value)
+                if (randVal <= kv.Value)
                     return kv.Key;
                 else
-                    rnd -= kv.Value;
+                    randVal -= kv.Value;
             }
 
-            if (rnd <= 0.001f)
+            if (randVal <= 0.001f)
                 return dict.Last().Key;
 
             throw new Exception("Random select failed.");
+        }
+
+        /// <summary>
+        /// A test to proove that the random select works fine
+        /// </summary>
+        public static int[] TestRandomness(
+            int tests,
+            double maxVal,
+            int dataCount = 10)
+        {
+            double totalSum;
+            Random rand;
+            Dictionary<int, double> data;
+            int[] buf;
+
+            rand = new Random();
+            data = new Dictionary<int, double>(dataCount);
+            for (int i = 0; i < dataCount; i++)
+                data.Add(dataCount - i - 1, maxVal / (i + 1));
+            totalSum = data.Sum(kv => kv.Value);
+            buf = new int[data.Count()];
+
+            for (int i = 0; i < tests; i++)
+                buf[RandomSelectElement(totalSum, data, rand)]++;
+
+            return buf;
         }
     }
 }

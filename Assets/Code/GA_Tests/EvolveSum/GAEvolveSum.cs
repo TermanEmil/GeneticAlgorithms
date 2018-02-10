@@ -107,8 +107,11 @@ namespace GA_Tests.EvolveSum
             ICrossover<int> crossover;
             IMutation<int> mutator;
 
-            selector = new EliteSelection<int>(2, partToBeElites: 0.5d);
+            //selector = new EliteSelection<int>(2, partToBeElites: 0.5d);
+            selector = new RouletteWheelSelection<int>(RandomInst, 2);
+
             crossover = new SinglePointCrossover<int>(RandomInst, 1);
+
             mutator = new ES_Mutation(RandomInst, geneMutChance, mutRange);
 
             result = new BreedingBase<int>(

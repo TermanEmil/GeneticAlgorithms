@@ -12,8 +12,10 @@ namespace GA.Genome.GeneticDiff
         public IList<Gene<T>> Disjoint { get; set; }
         public IList<Gene<T>> Excess { get; set; }
 
-        public GeneticDiff(IEnumerable<Gene<T>> genes1, IEnumerable<Gene<T>> genes2,
-                           IGeneChoice<T> geneChoice = null)
+        public GeneticDiff(
+            IEnumerable<Gene<T>> genes1,
+            IEnumerable<Gene<T>> genes2,
+            IGeneChoice<T> geneChoice = null)
         {
             int maxInvoNb;
             IEnumerable<int> commonInnovNbs;
@@ -23,7 +25,10 @@ namespace GA.Genome.GeneticDiff
                                    .Intersect(genes2.Select(x => x.InnovNb));
 
             if (geneChoice == null)
-                Matching = genes1.Intersect(genes2, new GeneInovEq<T>()).ToArray();
+            {
+                Matching = genes1.Intersect(genes2, new GeneInovEq<T>())
+                                 .ToArray();
+            }
             else
             {
                 Matching = commonInnovNbs.Select(x =>
@@ -35,11 +40,13 @@ namespace GA.Genome.GeneticDiff
 
             allGenes = genes1.Concat(genes2);
             maxInvoNb = allGenes.Max(x => x.InnovNb);
-
-            Disjoint = allGenes.Where(x => !commonInnovNbs.Contains(x.InnovNb) && x.InnovNb <= maxInvoNb)
-                               .ToArray();
-            Excess = allGenes.Where(x => !commonInnovNbs.Contains(x.InnovNb) && x.InnovNb > maxInvoNb)
-                             .ToArray();
+            Disjoint = allGenes.Where(x =>
+                                      !commonInnovNbs.Contains(x.InnovNb) &&
+                                      x.InnovNb <= maxInvoNb).ToArray();
+            
+            Excess = allGenes.Where(x =>
+                                    !commonInnovNbs.Contains(x.InnovNb) &&
+                                    x.InnovNb > maxInvoNb).ToArray();
         }
     }
 }
