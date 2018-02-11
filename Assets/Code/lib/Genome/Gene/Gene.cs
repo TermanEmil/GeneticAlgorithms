@@ -4,7 +4,7 @@ namespace GA.Gene
 {
     public class Gene<T>
     {
-        public int InnovNb { get; private set; }
+        public int InnovNb { get; set; }
         public T Val { get; set; }
 
         public Gene(int innovNb = 0)

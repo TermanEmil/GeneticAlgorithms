@@ -40,15 +40,15 @@ namespace GA.NeuralNet.NeuralGenome
             ReconnectInnovNbNetwork();
         }
 
-        public IList<double> FeedNetwork(IDictionary<int, double> inputs)
+        public IList<double> FeedNetwork(double[] inputs)
         {
             foreach (var kv in Network)
                 kv.Key.IsCalculated = false;
 
-            foreach (var kv in inputs)
+            for (int i = 0; i < inputs.Length; i++)
             {
-                InnovNbNetwork[kv.Key].Val = kv.Value;
-                InnovNbNetwork[kv.Key].IsCalculated = true;
+                InnovNbNetwork[i].Val = inputs[i];
+                InnovNbNetwork[i].IsCalculated = true;
             }
 
             var outputs = GetNeuronsOfType(ENeurType.output);

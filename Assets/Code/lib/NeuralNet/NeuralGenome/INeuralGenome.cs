@@ -9,6 +9,6 @@ namespace GA.NeuralNet.NeuralGenome
 {
     public interface INeuralGenome : IGenome<Synapse>
     {
-        IList<double> FeedNetwork(IDictionary<int, double> inputs);
+        IList<double> FeedNetwork(double[] inputs);
     }
 }
