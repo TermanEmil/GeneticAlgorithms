@@ -24,7 +24,7 @@ namespace GA_Tests.PathFinder
             rb = GetComponent<Rigidbody2D>();
         }
 
-        private void FixedUpdate()
+        private void Update()
         {
             if (genome != null)
                 FeedMyNeuralNetwork(Time.fixedDeltaTime);
@@ -58,8 +58,8 @@ namespace GA_Tests.PathFinder
             var rotValue = Mathf.Lerp(-180, 180, (float)networkOutputs[0]);
             transform.rotation = Quaternion.Euler(Vector3.forward * rotValue);
 
-            rb.AddForce(transform.up *
-                        (float)(networkOutputs[1] * movementVel) * deltaTime);
+            rb.velocity = transform.up *
+                (float)(networkOutputs[1] * movementVel);
         }
 
         private double DoRaycast(Vector3 targetPos)

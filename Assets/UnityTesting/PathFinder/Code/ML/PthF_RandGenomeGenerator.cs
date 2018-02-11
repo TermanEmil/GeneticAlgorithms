@@ -76,8 +76,10 @@ namespace GA_Tests.PathFinder
 
             var biasNeuron = new Neuron(innovNb, ENeurType.bias, 1);
 
-            var neuralLayers = new List<Neuron[]>();
-            neuralLayers.Add(inputNeurons);
+            var neuralLayers = new List<Neuron[]>
+            {
+                inputNeurons
+            };
             neuralLayers.AddRange(hiddenLayers);
             neuralLayers.Add(outputNeurons);
 
@@ -101,7 +103,6 @@ namespace GA_Tests.PathFinder
                 gene.InnovNb = innovNb;
                 innovNb++;
             }
-
             return new NeuralGenomeBase(genes, new Sigmoid());
         }
 

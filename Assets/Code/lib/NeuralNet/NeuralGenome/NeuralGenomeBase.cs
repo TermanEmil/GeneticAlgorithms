@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
+using System;
 
 using GA.Gene;
 using GA.Genome;
 using GA.NeuralNet.SynapseStruct;
 using GA.NeuralNet.NeuronClass;
 using GA.NeuralNet.Activation;
+using System.Threading.Tasks;
 
 namespace GA.NeuralNet.NeuralGenome
 {
@@ -114,9 +116,12 @@ namespace GA.NeuralNet.NeuralGenome
 
             target.IsCalculated = true;
             sum = 0d;
-            foreach (var synapse in Network[target])
+            var synapses = Network[target];
+            foreach (var synapse in synapses)
             {
-                Debug.Assert(synapse.receiver == target);
+                if (synapse.receiver != target)
+                    continue;
+                
                 if (!synapse.isEnabled)
                     continue;
 

@@ -70,7 +70,7 @@ namespace GA_Tests.PathFinder
             if (agents.Count() != 0)
             {
                 foreach (var agent in agents)
-                    GameObject.Destroy(agent);
+                    Destroy(agent.gameObject);
             }
             agents.Clear();
 
@@ -80,6 +80,7 @@ namespace GA_Tests.PathFinder
                     .GetComponent<AgentCtrl>();
                 newAgent.transform.position = spawnPoint.position;
                 newAgent.Init(population.Genomes[i] as INeuralGenome, target);
+                agents.Add(newAgent);
             }
         }
 

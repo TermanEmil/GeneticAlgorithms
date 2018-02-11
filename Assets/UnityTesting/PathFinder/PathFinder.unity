@@ -160,7 +160,7 @@ Transform:
   m_PrefabParentObject: {fileID: 4321640166468928, guid: d7aa5977f923c453fb5bd2ab4a4f48d1,
     type: 2}
   m_PrefabInternal: {fileID: 185726393}
---- !u!1001 &604574199
+--- !u!1001 &544976799
 Prefab:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -198,10 +198,6 @@ Prefab:
     - target: {fileID: 4271633726059862, guid: 3c30cfff750164d4490f46d8f5c6b715, type: 2}
       propertyPath: m_RootOrder
       value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 1392928014638108, guid: 3c30cfff750164d4490f46d8f5c6b715, type: 2}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3c30cfff750164d4490f46d8f5c6b715, type: 2}
@@ -385,7 +381,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seedRandom: 0
-  poplLen: 1
+  poplLen: 50
   partToReinsert: 0.1
   geneMutChance: 0.1
   weightMutRange: 1
@@ -393,7 +389,7 @@ MonoBehaviour:
   inputCount: 6
   outputCount: 2
   hiddenLayers: 1
-  hiddenLayerNeurons: 6
+  hiddenLayerNeurons: 12
   spawnPoint: {fileID: 915430295}
   agentsBuf: {fileID: 1112104990}
   target: {fileID: 1013352320}
