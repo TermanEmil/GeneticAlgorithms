@@ -11,6 +11,7 @@ namespace GA_Tests.PathFinder
         public INeuralGenome genome;
 
         public Transform target;
+        public float smallestDistanceToTarget = Mathf.Infinity;
         public LayerMask rayLayermask;
         public Transform[] rayPoints;
 
@@ -19,15 +20,36 @@ namespace GA_Tests.PathFinder
         public double rotationSpeed = 0.1d;
         private Rigidbody2D rb;
 
+        [Header("Fitness")]
+        public bool inTargetArea = false;
+
+        private PathFinderCtrl pathFinderCtrl;
+
         private void Start()
         {
             rb = GetComponent<Rigidbody2D>();
+            pathFinderCtrl = FindObjectOfType<PathFinderCtrl>();
         }
 
         private void Update()
         {
-            if (genome != null)
-                FeedMyNeuralNetwork(Time.fixedDeltaTime);
+            if (genome == null || target == null)
+                return;
+
+            FeedMyNeuralNetwork(Time.fixedDeltaTime);
+
+            var currentDist = Vector3.Distance(target.position,
+                                               transform.position);
+
+            //var addFitness = 1 / Mathf.Max(currentDist, 0.001f);
+            //if (inTargetArea)
+            //    addFitness *= pathFinderCtrl.fitnessMultInArea;
+            //genome.Fitness += addFitness;
+        }
+
+        private void OnCollisionEnter2D(Collision2D collision)
+        {
+            gameObject.SetActive(false);
         }
 
         public void Init(INeuralGenome genome_, Transform target_)
@@ -38,15 +60,16 @@ namespace GA_Tests.PathFinder
 
         public void FeedMyNeuralNetwork(float deltaTime)
         {
-            var inputs = new double[rayPoints.Length + 1];
+            var inputs = new double[rayPoints.Length + 2];
 
             for (int i = 0; i < rayPoints.Length; i++)
                 inputs[i] = DoRaycast(rayPoints[i].position);
 
             var heading = (target.position - transform.position);
             var direction = heading / heading.magnitude;
-            double zDirection = Mathf.InverseLerp(-1, 1, direction.z);
-            inputs[rayPoints.Length] = zDirection;
+
+            inputs[rayPoints.Length] = direction.x;
+            inputs[rayPoints.Length + 1] = direction.y;
 
             ApplyNetworkOutputs(genome.FeedNetwork(inputs), deltaTime);
         }
@@ -55,11 +78,13 @@ namespace GA_Tests.PathFinder
             IList<double> networkOutputs,
             float deltaTime)
         {
-            var rotValue = Mathf.Lerp(-180, 180, (float)networkOutputs[0]);
-            transform.rotation = Quaternion.Euler(Vector3.forward * rotValue);
+            var rotVal = Mathf.Lerp(-1, 1, (float)networkOutputs[0]);
+            rotVal = (float)(rotVal * rotationSpeed * deltaTime);
+            transform.Rotate(Vector3.forward * rotVal);
 
-            rb.velocity = transform.up *
-                (float)(networkOutputs[1] * movementVel);
+            var movementVal = Mathf.Lerp(-1, 1, (float)networkOutputs[1]);
+            movementVal *= (float)movementVel;
+            rb.velocity = transform.up * (float)(movementVal * movementVel);
         }
 
         private double DoRaycast(Vector3 targetPos)

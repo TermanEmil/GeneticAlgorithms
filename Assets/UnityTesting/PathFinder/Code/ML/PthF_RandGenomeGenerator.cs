@@ -103,7 +103,8 @@ namespace GA_Tests.PathFinder
                 gene.InnovNb = innovNb;
                 innovNb++;
             }
-            return new NeuralGenomeBase(genes, new Sigmoid());
+            //return new NeuralGenomeBase(genes, new Sigmoid());
+            return null;
         }
 
         private List<Gene<Synapse>> ConnectLayers(
@@ -135,7 +136,11 @@ namespace GA_Tests.PathFinder
             Neuron transmiter,
             Neuron receiver)
         {
-            var newSynapse = new Synapse(transmiter, receiver, RandomWeight());
+            var newSynapse = new Synapse(
+                transmiter.innovNb,
+                receiver.innovNb,
+                RandomWeight());
+            
             var newGene = new Gene<Synapse>();
             newGene.Val = newSynapse;
             return newGene;

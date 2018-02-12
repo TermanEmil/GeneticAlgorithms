@@ -14,7 +14,7 @@ namespace GA.Genome
             Genes = genes;
         }
 
-        public IGenome<T> CreateNew(bool copyGenes = true)
+        public virtual IGenome<T> CreateNew(bool copyGenes = true)
         {
             IList<Gene<T>> genes;
 

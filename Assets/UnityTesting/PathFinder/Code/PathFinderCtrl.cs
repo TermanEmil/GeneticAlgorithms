@@ -30,6 +30,10 @@ namespace GA_Tests.PathFinder
         public double geneMutChance = 0.1d;
         public double weightMutRange = 1d;
 
+        [Header("Fitness")]
+        public float fitnessExpGradeint = 2;
+        public float fitnessMultInArea = 3;
+
         [Header("Nerual net")]
         public double randomWeight = 1;
         public int inputCount = 6;
@@ -42,6 +46,8 @@ namespace GA_Tests.PathFinder
         public Transform agentsBuf;
         public Transform target;
         public GameObject agentPrefab;
+        public float lifeSpan = 10f;
+        private float generationStartTime;
         public List<AgentCtrl> agents = new List<AgentCtrl>();
 
         private void Start()
@@ -57,12 +63,22 @@ namespace GA_Tests.PathFinder
         {
             if (Input.GetKeyDown(KeyCode.R))
                 InitAll();
+
+
+            if (agents.FirstOrDefault(x => x.gameObject.activeSelf) == null ||
+                generationStartTime + lifeSpan < Time.time)
+            {
+                NextGeneration();
+                generationStartTime = Time.time;
+                Debug.Log("Next");
+            }
         }
 
         public void InitAll()
         {
             InitGAInternal();
             InitAgents();
+            generationStartTime = Time.time;
         }
 
         public void InitAgents()
@@ -127,6 +143,27 @@ namespace GA_Tests.PathFinder
                 selector,
                 crossover,
                 mutator);
+        }
+
+        private void NextGeneration()
+        {
+            if (!agents.Any())
+                return;
+            agents.ForEach(ComputeAgentFitness);
+            population.Evolve();
+            InitAgents();
+        }
+
+        private void ComputeAgentFitness(AgentCtrl agent)
+        {
+            if (!agent.gameObject.activeSelf)
+                return;
+            
+            agent.genome.Fitness = 1 / Vector3.Distance(
+                agent.transform.position, target.position);
+
+            if (agent.inTargetArea)
+                agent.genome.Fitness *= fitnessMultInArea;
         }
     }
 }

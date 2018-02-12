@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Diagnostics;
 using System;
 
 using GA.Gene;
@@ -24,22 +23,25 @@ namespace GA.NeuralNet.NeuralGenome
         /// The same network, but it defines connections between innovation nb
         /// and Neurons.
         /// </summary>
-        public IDictionary<int, Neuron> InnovNbNetwork
+        public IDictionary<int, Neuron> Neurons
         {
             get;
             protected set;
         }
 
+        public IList<Neuron> NeuronLst;
         public IActivation ActivationF { get; set; }
 
         public NeuralGenomeBase(
+            IList<Neuron> neurons,
             IList<Gene<Synapse>> genes,
             IActivation activationF) : base(genes)
         {
             ActivationF = activationF;
 
-            ReconnectNeuralNetwork();
-            ReconnectInnovNbNetwork();
+            NeuronLst = neurons;
+            ConnectInnovNbNetwork();
+            ConnectNeuralNetwork();
         }
 
         public IList<double> FeedNetwork(double[] inputs)
@@ -49,8 +51,8 @@ namespace GA.NeuralNet.NeuralGenome
 
             for (int i = 0; i < inputs.Length; i++)
             {
-                InnovNbNetwork[i].Val = inputs[i];
-                InnovNbNetwork[i].IsCalculated = true;
+                Neurons[i].Val = inputs[i];
+                Neurons[i].IsCalculated = true;
             }
 
             var outputs = GetNeuronsOfType(ENeurType.output);
@@ -59,6 +61,23 @@ namespace GA.NeuralNet.NeuralGenome
 
             return outputs.Select(x => x.Val).ToArray();
         }   
+
+        public override IGenome<Synapse> CreateNew(bool copyGenes = true)
+        {
+            IList<Gene<Synapse>> genes;
+            IList<Neuron> neurons;
+
+            if (copyGenes)
+                genes = Genes.Select(x => new Gene<Synapse>(x)).ToArray();
+            else
+                genes = Genes;
+
+            neurons = NeuronLst.Select(x => new Neuron(x.innovNb,
+                                                       x.neurType,
+                                                       x.Val))
+                               .ToArray();
+            return new NeuralGenomeBase(neurons, genes, ActivationF);
+        }
 
         protected Neuron[] GetNeuronsOfType(ENeurType neurType)
         {
@@ -71,7 +90,7 @@ namespace GA.NeuralNet.NeuralGenome
         /// Reconnectes the Network, remembering the connections
         /// between neurons, making FeedNeuralNetwork() faster.
         /// </summary>
-        protected void ReconnectNeuralNetwork()
+        protected void ConnectNeuralNetwork()
         {
             if (Network == null)
                 Network = new Dictionary<Neuron, IList<Synapse>>();
@@ -80,29 +99,35 @@ namespace GA.NeuralNet.NeuralGenome
 
             foreach (var gene in Genes)
             {
-                if (!Network.ContainsKey(gene.Val.transmitter))
-                    Network.Add(gene.Val.transmitter, new List<Synapse>(1));
-                if (!Network.ContainsKey(gene.Val.receiver))
-                    Network.Add(gene.Val.receiver, new List<Synapse>(1));
+                if (!Network.ContainsKey(Neurons[gene.Val.transmitter]))
+                {
+                    Network.Add(Neurons[gene.Val.transmitter],
+                                new List<Synapse>(1));
+                }
+                if (!Network.ContainsKey(Neurons[gene.Val.receiver]))
+                {
+                    Network.Add(Neurons[gene.Val.receiver],
+                                new List<Synapse>(1));
+                }
 
-                Network[gene.Val.transmitter].Add(gene.Val);
-                Network[gene.Val.receiver].Add(gene.Val);
+                Network[Neurons[gene.Val.transmitter]].Add(gene.Val);
+                Network[Neurons[gene.Val.receiver]].Add(gene.Val);
             }
         }
 
-        protected void ReconnectInnovNbNetwork()
+        protected void ConnectInnovNbNetwork()
         {
-            if (InnovNbNetwork == null)
-                InnovNbNetwork = new Dictionary<int, Neuron>();
+            if (Neurons == null)
+                Neurons = new Dictionary<int, Neuron>();
             else
-                InnovNbNetwork.Clear();
+                Neurons.Clear();
 
-            foreach (var kv in Network)
+            foreach (var neuron in NeuronLst)
             {
-                if (!InnovNbNetwork.ContainsKey(kv.Key.innovNb))
-                    InnovNbNetwork.Add(kv.Key.innovNb, kv.Key);
-                else
-                    Debug.Assert(InnovNbNetwork[kv.Key.innovNb] == kv.Key);
+                if (!Neurons.ContainsKey(neuron.innovNb))
+                    Neurons.Add(neuron.innovNb, neuron);
+                else if (Neurons[neuron.innovNb] != neuron)
+                    throw new Exception("AAAAaAAAaaaaa: " + neuron.innovNb);
             }
         }
 
@@ -116,18 +141,17 @@ namespace GA.NeuralNet.NeuralGenome
 
             target.IsCalculated = true;
             sum = 0d;
-            var synapses = Network[target];
-            foreach (var synapse in synapses)
+            foreach (var synapse in Network[target])
             {
-                if (synapse.receiver != target)
+                if (synapse.receiver != target.innovNb)
                     continue;
                 
                 if (!synapse.isEnabled)
                     continue;
 
-                if (!synapse.transmitter.IsCalculated)
-                    ComputNeuronVal(synapse.transmitter);
-                sum += synapse.weight * synapse.transmitter.Val;
+                if (!Neurons[synapse.transmitter].IsCalculated)
+                    ComputNeuronVal(Neurons[synapse.transmitter]);
+                sum += synapse.weight * Neurons[synapse.transmitter].Val;
             }
             target.Val = ActivationF.Activate(sum);
         }
