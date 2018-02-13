@@ -75,7 +75,7 @@ namespace GA.GenerationGenerator.GenomeProducer.Breeding.Selection
                     randVal -= kv.Value;
             }
 
-            if (randVal <= 0.001f)
+            if (randVal <= 0.01)
                 return dict.Last().Key;
 
             throw new Exception("Random select failed.");

@@ -29,7 +29,7 @@ namespace GA.NeuralNet.NeuralGenome
             protected set;
         }
 
-        public IList<Neuron> NeuronLst;
+        public IList<Neuron> NeuronLst { get; set; }
         public IActivation ActivationF { get; set; }
 
         public NeuralGenomeBase(

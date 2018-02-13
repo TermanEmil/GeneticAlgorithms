@@ -17,10 +17,11 @@ using GA.GenerationGenerator.GenomeProducer.Breeding;
 using GA.GenerationGenerator.GenomeProducer.Breeding.Selection;
 using GA.GenerationGenerator.GenomeProducer.Breeding.Crossover;
 using GA.GenerationGenerator.GenomeProducer.Breeding.Mutation;
+using System.Collections;
 
-namespace GA_Tests.XOR
+namespace GA_Tests.SimpleBits
 {
-    public class XOR : MonoBehaviour
+    public abstract class SimpleBits : MonoBehaviour
     {
         public IPopulation<Synapse> population;
 
@@ -38,7 +39,10 @@ namespace GA_Tests.XOR
         public bool seedRandom = false;
         public int[] hiddenLayers = new int[1] { 1 };
         public bool createBias = true;
-        public double fitenssPower = 2;
+        public float fitenssPower = 2;
+        public int inputCount = 2;
+        public int outputCount = 1;
+        public bool roulteWheelSelection = false;
 
         [Header("Canvas")]
         public InputField inputField1;
@@ -72,8 +76,8 @@ namespace GA_Tests.XOR
                 rand,
                 new Sigmoid(),
                 weightRange,
-                2,
-                1,
+                inputCount,
+                outputCount,
                 hiddenLayers,
                 createBias);
 
@@ -91,7 +95,7 @@ namespace GA_Tests.XOR
                 generationGenerator);
         }
 
-        public void ComputeUIButtonRequest()
+        public virtual void ComputeUIButtonRequest()
         {
             foreach (var genome in population.Genomes)
                 ComputeFitness(genome as INeuralGenome);
@@ -105,10 +109,27 @@ namespace GA_Tests.XOR
             textField.text = string.Format("{0:0.00}", output);
         }
 
-        private IBreeding<Synapse> NewBreeding(System.Random random)
+        public INeuralGenome GetBestGenome()
         {
-            //var selector = new EliteSelection<Synapse>(2);
-            var selector = new RouletteWheelSelection<Synapse>(random, 2);
+            foreach (var genome in population.Genomes)
+                ComputeFitness(genome as INeuralGenome);
+            return population.Genomes
+                             .OrderByDescending(x => x.Fitness)
+                             .First() as INeuralGenome;
+                             
+        }
+
+        protected abstract double ComputeFitness(INeuralGenome genome);
+
+        protected IBreeding<Synapse> NewBreeding(System.Random random)
+        {
+            ISelection<Synapse> selector;
+
+            if (roulteWheelSelection)
+                selector = new RouletteWheelSelection<Synapse>(random, 2);
+            else
+                selector = new EliteSelection<Synapse>(2);
+
             var crossover = new SinglePointCrossover<Synapse>(random);
             var mutator = new FixedNeuralNetMutation(
                 random,
@@ -121,27 +142,7 @@ namespace GA_Tests.XOR
                 mutator);
         }
 
-        private double ComputeFitness(INeuralGenome genome)
-        {
-            //Debug.Log(genome);
-            double error = 0;
-
-            genome.Fitness = 0;
-            for (int i = 0; i < 2; i++)
-            {
-                for (int j = 0; j < 2; j++)
-                {
-                    var output = genome.FeedNetwork(new double[2] { i, j })[0];
-                    //Debug.Log(string.Format("[{0} {1}]: {2:0.00}", i, j, output));
-                    error += Math.Abs((i ^ j) - output);
-                }
-            }
-
-            genome.Fitness = Math.Pow(4 - error + 1, fitenssPower);
-            return error;
-        }
-
-        private bool MaxReached()
+        protected bool MaxReached()
         {
             foreach (var genome in population.Genomes)
                 ComputeFitness(genome as INeuralGenome);
@@ -152,7 +153,7 @@ namespace GA_Tests.XOR
             return ComputeFitness(best) <= desiredError;
         }
 
-        private void ComputeGenerations()
+        protected void ComputeGenerations()
         {
             for (int i = 0; i < maxGenerations; i++)
             {
@@ -167,6 +168,25 @@ namespace GA_Tests.XOR
 
                 population.Evolve();
             }
+        }
+
+        protected double[] ToBits(int nb, int length = 3)
+        {
+            var bits = new BitArray(new int[] { nb });
+            double[] result = new double[length];
+            for (int i = 0; i < length; i++)
+                result[i] = (bits[i]) ? 1 : 0;
+            return result;
+        }
+
+        protected float GetNetworkOutputAsNb(INeuralGenome genome, int inNb)
+        {
+            var outputs = genome.FeedNetwork(ToBits(inNb));
+            double result = 0;
+
+            for (int i = 0; i < outputs.Count(); i++)
+                result += outputs[i] * Mathf.Pow(2, i);
+            return (float)result;
         }
     }
 }

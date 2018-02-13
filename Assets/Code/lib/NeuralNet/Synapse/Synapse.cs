@@ -27,5 +27,20 @@ namespace GA.NeuralNet.SynapseStruct
                                  weight,
                                  receiver);
         }
+
+        public override bool Equals(object obj)
+        {
+            var synapse = (Synapse)obj;
+
+            return
+                (synapse.transmitter == transmitter) &&
+                (synapse.receiver == receiver) &&
+                (synapse.isEnabled == isEnabled);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }
