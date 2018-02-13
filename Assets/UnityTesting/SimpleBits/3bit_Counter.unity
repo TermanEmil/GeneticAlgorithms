@@ -322,16 +322,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weightSize: 1
   maxWeight: 20
+  autoAdjustMaxWeight: 1
   connectionWidth: 0.5
   positiveWeightColor: {r: 0, g: 1, b: 0, a: 1}
   negativeWeightColor: {r: 1, g: 0, b: 0, a: 1}
   disabledColor: {r: 0, g: 0, b: 0, a: 1}
+  distBetweenNodes: 51.7
   nodePrefab: {fileID: 1189582430603930, guid: 67fedf122df93b447b0a590aa2f72cdf, type: 2}
   nodesParent: {fileID: 1321910162}
   inputNodesPos: {fileID: 351369928}
   outputNodesPos: {fileID: 2054411644}
   bottom: {fileID: 1934397447}
-  distBetweenNodes: 51.7
   newGenomeInputCount: 2
   newGenomeOutputCout: 2
   hiddenNodes: 10
@@ -430,13 +431,14 @@ MonoBehaviour:
   reinsertPart: 0.4
   geneMutChance: 0.1
   weightRange: 1
-  mutRange: 0.1
+  mutRange: 1
   seedRandom: 0
-  hiddenLayers: 06000000
+  hiddenLayers: 0c000000
   createBias: 1
   fitenssPower: 1.5
   inputCount: 3
-  outputCount: 1
+  outputCount: 3
+  roulteWheelSelection: 0
   inputField1: {fileID: 0}
   inputField2: {fileID: 0}
   textField: {fileID: 1502632405}

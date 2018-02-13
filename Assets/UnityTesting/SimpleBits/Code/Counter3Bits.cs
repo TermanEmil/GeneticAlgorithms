@@ -6,6 +6,13 @@ using GA.NeuralNet.NeuralGenome;
 
 namespace GA_Tests.SimpleBits
 {
+    /// <summary>
+    /// Learn to count.
+    /// For a given number, get the next number. The inputs and outputs are 
+    /// represented in bits.
+    /// 
+    /// But it fails to learn...
+    /// </summary>
     public class Counter3Bits : SimpleBits
     {
         protected override double ComputeFitness(INeuralGenome genome)
@@ -17,7 +24,7 @@ namespace GA_Tests.SimpleBits
         {
             float error = 0;
 
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < 7; i++)
             {
                 var next3Bit = i + 1;
                 if (next3Bit >= 8)
@@ -34,16 +41,13 @@ namespace GA_Tests.SimpleBits
             string result = "";
             var bestGenome = GetBestGenome();
 
-            //for (int i = 0; i < 8; i++)
-            //result += string.Format("{0}) {1:0.00}",
-            //        i,
-            //        GetNetworkOutputAsNb(bestGenome, i)) +
-            //System.Environment.NewLine;
             for (int i = 0; i < 8; i++)
+            {
                 result += string.Format("{0}) {1:0.00}",
-                                        i,
-                                        bestGenome.FeedNetwork(ToBits(i))[0])
-                                + System.Environment.NewLine;
+                        i,
+                        GetNetworkOutputAsNb(bestGenome, i));
+                result += System.Environment.NewLine;
+            }
             textField.text = result;
         }
     }

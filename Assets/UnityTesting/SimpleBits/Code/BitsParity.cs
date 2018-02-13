@@ -5,6 +5,10 @@ using GA.NeuralNet.NeuralGenome;
 
 namespace GA_Tests.SimpleBits
 {
+    /// <summary>
+    /// Test the algorithm if it learns to determine if the input is an odd or
+    /// even number.
+    /// </summary>
     public class BitsParity : SimpleBits
     {
         protected override double ComputeFitness(INeuralGenome genome)

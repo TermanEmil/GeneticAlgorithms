@@ -170,8 +170,9 @@ namespace GA_Tests.SimpleBits
             }
         }
 
-        protected double[] ToBits(int nb, int length = 3)
+        protected double[] ToBits(int nb, int maxNb = 8)
         {
+            var length = Mathf.RoundToInt(Mathf.Log(maxNb, 2));
             var bits = new BitArray(new int[] { nb });
             double[] result = new double[length];
             for (int i = 0; i < length; i++)
