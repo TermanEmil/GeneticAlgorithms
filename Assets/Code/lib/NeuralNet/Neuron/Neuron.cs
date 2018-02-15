@@ -30,6 +30,14 @@ namespace GA.NeuralNet.NeuronClass
             IsCalculated = false;
         }
 
+        public Neuron(Neuron other)
+        {
+            innovNb = other.innovNb;
+            neurType = other.neurType;
+            Val = other.Val;
+            IsCalculated = other.IsCalculated;
+        }
+
         public override string ToString()
         {
             return string.Format("({0}: {1})", neurType, innovNb);

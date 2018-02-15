@@ -71,11 +71,8 @@ namespace GA.NeuralNet.NeuralGenome
                 genes = Genes.Select(x => new Gene<Synapse>(x)).ToArray();
             else
                 genes = Genes;
-
-            neurons = NeuronLst.Select(x => new Neuron(x.innovNb,
-                                                       x.neurType,
-                                                       x.Val))
-                               .ToArray();
+            
+            neurons = NeuronLst.Select(x => new Neuron(x)).ToArray();
             return new NeuralGenomeBase(neurons, genes, ActivationF);
         }
 

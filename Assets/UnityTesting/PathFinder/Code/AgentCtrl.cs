@@ -23,28 +23,17 @@ namespace GA_Tests.PathFinder
         [Header("Fitness")]
         public bool inTargetArea = false;
 
-        private PathFinderCtrl pathFinderCtrl;
-
         private void Start()
         {
             rb = GetComponent<Rigidbody2D>();
-            pathFinderCtrl = FindObjectOfType<PathFinderCtrl>();
         }
 
-        private void Update()
+        private void FixedUpdate()
         {
             if (genome == null || target == null)
                 return;
 
             FeedMyNeuralNetwork(Time.fixedDeltaTime);
-
-            var currentDist = Vector3.Distance(target.position,
-                                               transform.position);
-
-            //var addFitness = 1 / Mathf.Max(currentDist, 0.001f);
-            //if (inTargetArea)
-            //    addFitness *= pathFinderCtrl.fitnessMultInArea;
-            //genome.Fitness += addFitness;
         }
 
         private void OnCollisionEnter2D(Collision2D collision)
@@ -78,13 +67,24 @@ namespace GA_Tests.PathFinder
             IList<double> networkOutputs,
             float deltaTime)
         {
-            var rotVal = Mathf.Lerp(-1, 1, (float)networkOutputs[0]);
-            rotVal = (float)(rotVal * rotationSpeed * deltaTime);
-            transform.Rotate(Vector3.forward * rotVal);
+            ApplyRotation(deltaTime, (float)networkOutputs[0]);
+            ApplyMovement(deltaTime, (float)networkOutputs[1]);
+        }
 
-            var movementVal = Mathf.Lerp(-1, 1, (float)networkOutputs[1]);
+        private void ApplyRotation(float deltaTime, float networkOutput)
+        {
+            var rotVal = Mathf.Lerp(-1, 1, networkOutput);
+            rotVal *= (float)rotationSpeed * deltaTime;
+            transform.Rotate(Vector3.forward * rotVal);
+        }
+
+        private void ApplyMovement(float deltaTime, float networkOutput)
+        {
+            var movementVal = Mathf.Lerp(-1, 1, networkOutput);
             movementVal *= (float)movementVel;
-            rb.velocity = transform.up * (float)(movementVal * movementVel);
+
+            //rb.velocity = transform.up * movementVal;
+            rb.AddForce(transform.up * movementVal * deltaTime);
         }
 
         private double DoRaycast(Vector3 targetPos)
@@ -98,6 +98,9 @@ namespace GA_Tests.PathFinder
             {
                 double result = Vector3.Distance(transform.position, hit.point);
                 result /= Vector3.Distance(transform.position, targetPos);
+
+                Debug.DrawLine(transform.position, hit.point, Color.red);
+
                 return result;
             }
             else

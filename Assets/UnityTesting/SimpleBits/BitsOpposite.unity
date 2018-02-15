@@ -781,23 +781,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autostart: 0
   desiredError: 0.1
-  maxGenerations: 100
+  maxGenerations: 200
   poplLne: 150
   reinsertPart: 0.2
   geneMutChance: 0.1
   weightRange: 1
-  mutRange: 10
+  mutRange: 20
   seedRandom: 0
   hiddenLayers: 
   createBias: 1
   fitenssPower: 2
-  inputCount: 3
-  outputCount: 3
+  inputCount: 4
+  outputCount: 4
   roulteWheelSelection: 0
   inputField1: {fileID: 0}
   inputField2: {fileID: 0}
   textField: {fileID: 756052168}
-  MaxCount: 8
+  MaxCount: 16
 --- !u!4 &1264678750
 Transform:
   m_ObjectHideFlags: 0

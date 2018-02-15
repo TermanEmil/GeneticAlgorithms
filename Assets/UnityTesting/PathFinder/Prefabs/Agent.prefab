@@ -376,7 +376,7 @@ MonoBehaviour:
   - {fileID: 4058572534752172}
   - {fileID: 4309296381632104}
   - {fileID: 4602855775592088}
-  movementVel: 4
+  movementVel: 4000
   rotationSpeed: 45
   inTargetArea: 0
 --- !u!114 &114622366828919016

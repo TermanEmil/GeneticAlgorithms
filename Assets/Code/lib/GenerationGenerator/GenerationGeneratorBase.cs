@@ -40,7 +40,8 @@ namespace GA.GenerationGenerator
 
             result = new List<IGenome<T>>(genomes.Count);
             foreach (var producer in GenomeProducers)
-                result.AddRange(producer.Generate(genomes));
+                if (producer != null)
+                    result.AddRange(producer.Generate(genomes));
 
             if (result.Count() != ToProduceCount)
                 ThrowInvalidResultCount(result.Count());

@@ -7,6 +7,7 @@ using GA.Population;
 using GA.NeuralNet.SynapseStruct;
 using GA.NeuralNet.NeuronClass;
 using GA.NeuralNet.NeuralGenome;
+using GA.NeuralNet.RandomGenomeGenerator;
 using GA.NeuralNet.Activation;
 using GA.NeuralNet.Mutation;
 using GA.GenerationGenerator;
@@ -15,7 +16,6 @@ using GA.GenerationGenerator.GenomeProducer.Breeding;
 using GA.GenerationGenerator.GenomeProducer.Breeding.Selection;
 using GA.GenerationGenerator.GenomeProducer.Breeding.Crossover;
 using GA.GenerationGenerator.GenomeProducer.Breeding.Mutation;
-
 
 namespace GA_Tests.PathFinder
 {
@@ -38,8 +38,8 @@ namespace GA_Tests.PathFinder
         public double randomWeight = 1;
         public int inputCount = 6;
         public int outputCount = 2;
-        public int hiddenLayers = 1;
-        public int hiddenLayerNeurons = 6;
+        public int[] hiddenLayers = null;
+        public bool createBias = true;
 
         [Header("Unity agents config")]
         public Transform spawnPoint;
@@ -50,13 +50,21 @@ namespace GA_Tests.PathFinder
         private float generationStartTime;
         public List<AgentCtrl> agents = new List<AgentCtrl>();
 
+        [Header("Dynamic output")]
+        public double currentBestFitness;
+
+        private System.Random rand;
+
         private void Start()
         {
             Debug.Assert(spawnPoint != null);
             Debug.Assert(agentsBuf != null);
             Debug.Assert(target != null);
             Debug.Assert(agentsBuf != null);
-            InitAll();
+
+            //rand = (seedRandom) ? new System.Random(1) : new System.Random();
+            rand = new System.Random(1);
+            //InitAll();
         }
 
         private void Update()
@@ -64,13 +72,14 @@ namespace GA_Tests.PathFinder
             if (Input.GetKeyDown(KeyCode.R))
                 InitAll();
 
+            if (!agents.Any())
+                return;
 
             if (agents.FirstOrDefault(x => x.gameObject.activeSelf) == null ||
                 generationStartTime + lifeSpan < Time.time)
             {
                 NextGeneration();
                 generationStartTime = Time.time;
-                Debug.Log("Next");
             }
         }
 
@@ -94,6 +103,7 @@ namespace GA_Tests.PathFinder
             {
                 var newAgent = Instantiate(agentPrefab, agentsBuf)
                     .GetComponent<AgentCtrl>();
+                newAgent.transform.rotation = spawnPoint.rotation;
                 newAgent.transform.position = spawnPoint.position;
                 newAgent.Init(population.Genomes[i] as INeuralGenome, target);
                 agents.Add(newAgent);
@@ -102,17 +112,14 @@ namespace GA_Tests.PathFinder
 
         public void InitGAInternal()
         {
-            System.Random rand;
-
-            rand = (seedRandom) ? new System.Random(1) : new System.Random();
-
-            var randomGenomeGenerator = new PthF_RandGenomeGenerator(
+            var randomGenomeGenerator = new RandNeuralGenomeGeneratorBase(
                 rand,
+                new Sigmoid(),
                 randomWeight,
                 inputCount,
                 outputCount,
                 hiddenLayers,
-                hiddenLayerNeurons);
+                createBias);
 
             var reinsertion = new ReinsertBest<Synapse>(
                 (int)(poplLen * partToReinsert));
@@ -131,6 +138,7 @@ namespace GA_Tests.PathFinder
         private IBreeding<Synapse> NewBreeding(System.Random random)
         {
             var selector = new EliteSelection<Synapse>(2);
+            //var selector = new RouletteWheelSelection<Synapse>(random, 2);
 
             var crossover = new SinglePointCrossover<Synapse>(random);
             var mutator = new FixedNeuralNetMutation(
@@ -149,21 +157,12 @@ namespace GA_Tests.PathFinder
         {
             if (!agents.Any())
                 return;
-            agents.ForEach(ComputeAgentFitness);
+            
+            currentBestFitness = population.Genomes
+                                           .OrderByDescending(x => x.Fitness)
+                                           .First().Fitness;
             population.Evolve();
             InitAgents();
-        }
-
-        private void ComputeAgentFitness(AgentCtrl agent)
-        {
-            if (!agent.gameObject.activeSelf)
-                return;
-            
-            agent.genome.Fitness = 1 / Vector3.Distance(
-                agent.transform.position, target.position);
-
-            if (agent.inTargetArea)
-                agent.genome.Fitness *= fitnessMultInArea;
         }
     }
 }
