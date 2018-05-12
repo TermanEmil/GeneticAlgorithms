@@ -20,7 +20,7 @@ namespace GA_Tests.FlappyBird
 
         public float scrollSpeed = 1;
         public float distBetweenColumns = 5;
-        [SerializeField] private Transform visibilityPoint = null;
+        public Transform visibilityPoint = null;
         [SerializeField] private Transform nonVisibilityPoint = null;
 
         private List<Column> columnPool = new List<Column>();
@@ -63,6 +63,7 @@ namespace GA_Tests.FlappyBird
         public void ResetColumns()
         {
             columnPool.ForEach(x => x.gameObject.SetActive(false));
+            UpdateColumns();
         }
 
         private void FixedUpdate()
@@ -70,7 +71,7 @@ namespace GA_Tests.FlappyBird
             UpdateColumns();
         }
 
-        private void UpdateColumns()
+        public void UpdateColumns()
         {
             if (lastColumn == null ||
                 (lastColumn.position.x + distBetweenColumns <

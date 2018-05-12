@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 using GA.UnityProxy.Genome;
 using GA.Population;
@@ -28,13 +29,15 @@ namespace GA_Tests.FlappyBird
         public int columns = 0;
         [HideInInspector] public Vector2 distToNextColOnDeath;
 
+        public bool isDead = false;
+
         private float lastActivation = 0;
         private Transform groundPoint;
 
         private Animator myAnimator;
         private Rigidbody2D rb;
 
-        private Dictionary<double, double[]> inputsOutputs = new Dictionary<double, double[]>();
+        [SerializeField] private Text scoreText = null;
 
         private void Start()
         {
@@ -43,12 +46,25 @@ namespace GA_Tests.FlappyBird
             groundPoint = GameObject.FindWithTag("GroundPoint").transform;
         }
 
+        private void Update()
+        {
+            if (genome == null)
+                return;
+            
+            BirdPopulation.instance.ComputeFitness(this);
+            scoreText.text = string.Format("{0:0.0}",
+                                           genome.Fitness.ToString());
+        }
+
         public override void Init(INeuralGenome targetGenome)
         {
             base.Init(targetGenome);
             lastActivation = 0;
             columns = 0;
             distToNextColOnDeath = Vector2.zero;
+            isDead = false;
+            foreach (var neuron in genome.Neurons)
+                neuron.Value.Val = 0;
         }
 
         private void OnCollisionEnter2D(Collision2D collision)
@@ -66,6 +82,9 @@ namespace GA_Tests.FlappyBird
 
         public void Die()
         {
+            if (isDead)
+                return;
+            
             var nxtCol = ColumnPool.Instance.ClossestColumn(transform.position);
             if (nxtCol != null)
             {
@@ -75,6 +94,7 @@ namespace GA_Tests.FlappyBird
                                                    transform.position.y);
             }
             gameObject.SetActive(false);
+            isDead = true;
         }
 
         private void FixedUpdate()
@@ -91,7 +111,8 @@ namespace GA_Tests.FlappyBird
 
         public void Flap()
         {
-            rb.AddForce(Vector2.up * flapVel * Time.fixedDeltaTime);
+            //rb.AddForce(Vector2.up * flapVel * Time.fixedDeltaTime);
+            rb.velocity = Vector2.up * flapVel;
             myAnimator.SetTrigger("flap");
         }
 
@@ -99,16 +120,6 @@ namespace GA_Tests.FlappyBird
         {
             var inputs = GetNeuralNetInputs();
             var output = genome.FeedNetwork(inputs)[0];
-
-            if (inputsOutputs.ContainsKey(output))
-            {
-                for (int i = 0; i < inputs.Length; i++)
-                    if (inputs[i] != inputsOutputs[output][i])
-                        throw new System.Exception("qweqweqweqwe");
-                inputsOutputs[output] = inputs;
-            }
-            else
-                inputsOutputs.Add(output, inputs);
 
             if (output > 0.5)
                 Flap();
@@ -121,29 +132,29 @@ namespace GA_Tests.FlappyBird
             var clossestColumn = ColumnPool.Instance
                                            .ClossestColumn(transform.position);
 
-            var maxDeltaX = ColumnPool.Instance.distBetweenColumns;
-            var maxDeltaY = Mathf.Abs(groundPoint.position.y);
-
             if (clossestColumn == null)
             {
-                deltaX = maxDeltaX;
-                columnY = maxDeltaY;
+                ColumnPool.Instance.UpdateColumns();
+                return GetNeuralNetInputs();
             }
-            else
-            {
-                deltaX = clossestColumn.position.x - transform.position.x;
-                columnY = clossestColumn.position.y - groundPoint.position.y;
-            }
+
+            var maxDeltaX = (ColumnPool.Instance.visibilityPoint.position.x) +
+                (ColumnPool.Instance.distBetweenColumns);
+            var maxDeltaY = 2 * Mathf.Abs(groundPoint.position.y);
+
+            deltaX = clossestColumn.position.x - transform.position.x;
+            columnY = clossestColumn.position.y - groundPoint.position.y;
 
             var distToGround = transform.position.y - groundPoint.position.y;
 
-            return new double[3]
+            var results = new double[]
             {
-                deltaX / ColumnPool.Instance.distBetweenColumns,
+                deltaX / maxDeltaX,
                 columnY / maxDeltaY,
                 distToGround / maxDeltaY
             };
-        }
 
+            return results;
+        }
     }
 }

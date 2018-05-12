@@ -1,18 +1,22 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 using GA.UnityProxy.Genome;
 using GA.UnityProxy.Population;
 using GA.NeuralNet.RandomGenomeGenerator;
 using GA.NeuralNet.Activation;
 using GA.NeuralNet.NeuralGenome;
-using System.Linq;
+using GA.GenerationGenerator.GenomeProducer.Breeding.Selection;
+using GA.NeuralNet.SynapseStruct;
 
 namespace GA_Tests.FlappyBird
 {
     public class BirdPopulation : PopulationProxy
     {
+        public static BirdPopulation instance;
+
         [Header("Additional Neural net config")]
         [SerializeField] private int[] hiddenLayers = null;
         public float columnFitness = 5;
@@ -27,6 +31,12 @@ namespace GA_Tests.FlappyBird
         [SerializeField] private float lifespan = 60;
         private float generationStartTime = -1;
         private Transform groundPoint;
+
+        protected override void Awake()
+        {
+            instance = this;
+            base.Awake();
+        }
 
         private void Start()
         {
@@ -43,6 +53,24 @@ namespace GA_Tests.FlappyBird
                 NextGeneration();
                 ColumnPool.Instance.ResetColumns();
             }
+        }
+
+        public void ComputeFitness(BirdAgent agent)
+        {
+            float fitness = 0;
+
+            fitness += (Mathf.Pow(agent.columns, columnPowFitness) - 1) *
+                columnFitness;
+
+            fitness += (ColumnPool.Instance.visibilityPoint.position.x +
+                        ColumnPool.Instance.distBetweenColumns -
+                        agent.distToNextColOnDeath.x) * xDistFitness;
+
+            //fitness += (Mathf.Abs(agent.distToNextColOnDeath.y -
+            //groundPoint.position.y)) * yDistFitness;
+
+            Debug.Log(fitness);
+            agent.genome.Fitness = fitness;
         }
 
         protected override void InitAgents()
@@ -85,20 +113,19 @@ namespace GA_Tests.FlappyBird
         protected override void NextGeneration()
         {
             agents.ForEach(x => ComputeFitness(x as BirdAgent));
+            generationStartTime = Time.time;
+            population.Genomes = population.Genomes
+                .OrderByDescending(x => x.Fitness)
+                .ToList();
+
+            //agents.OrderByDescending(x => x.genome.Fitness).First().gameObject.SetActive(true);
+            //Debug.DebugBreak();
             base.NextGeneration();
         }
 
-        private void ComputeFitness(BirdAgent agent)
+        protected override ISelection<Synapse> NewSelector(int toSelect = 2)
         {
-            var fitness = Mathf.Pow(agent.columns * columnFitness,
-                                    columnPowFitness);
-            fitness += (ColumnPool.Instance.distBetweenColumns -
-                        agent.distToNextColOnDeath.x) * xDistFitness;
-            
-            fitness += (agent.distToNextColOnDeath.y -
-                        groundPoint.position.y) * yDistFitness;
-
-            agent.genome.Fitness = fitness;
+            return new RouletteWheelSelection<Synapse>(rand, toSelect);
         }
     }
 }
